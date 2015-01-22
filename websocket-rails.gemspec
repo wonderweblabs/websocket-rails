@@ -2,18 +2,16 @@ $:.push File.expand_path("../lib", __FILE__)
 require "websocket_rails/version"
 
 Gem::Specification.new do |s|
-  s.name         = "websocket-rails"
-  s.summary      = "Plug and play websocket support for ruby on rails. Includes event router for mapping javascript events to controller actions."
-  s.description  = "Seamless Ruby on Rails websocket integration."
-  s.homepage     = "http://websocket-rails.github.io"
+  s.name         = "wwl-websocket-rails"
+  s.summary      = "Plug and play websocket support for ruby on rails. Includes event router for mapping javascript events to controller actions. Forked from websocket-rails by wonderweblabs."
+  s.description  = "Seamless Ruby on Rails websocket integration. Forked from websocket-rails by wonderweblabs."
+  s.homepage     = "https://github.com/wonderweblabs/websocket-rails"
   s.version      = WebsocketRails::VERSION
   s.platform     = Gem::Platform::RUBY
-  s.authors      = [ "Dan Knox", "Rory Low", "Three Dot Loft LLC" ]
-  s.email        = [ "dknox@threedotloft.com", "rory@threedotloft.com" ]
+  s.authors      = [ "Alexander Schrot", "Sascha Hillig" ]
+  s.email        = [ "email@wonderweblabs.com" ]
   s.license      = "MIT"
   s.executables  = "wsr"
-
-  s.rubyforge_project = "websocket-rails"
 
   s.files        = Dir["{lib,spec}/**/*"] + ["MIT-LICENSE", "Rakefile", "Gemfile", "README.md", "CHANGELOG.md"]
   s.require_path = 'lib'
