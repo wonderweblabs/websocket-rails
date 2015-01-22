@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    websocket-rails (0.7.0)
+    wwl-websocket-rails (0.7.2)
       connection_pool
       faye-websocket
       hiredis
@@ -199,4 +199,4 @@ DEPENDENCIES
   simplecov
   sqlite3
   terminal-notifier-guard
-  websocket-rails!
+  wwl-websocket-rails!
