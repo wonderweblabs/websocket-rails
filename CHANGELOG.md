@@ -1,5 +1,12 @@
 # WebsocketRails Change Log
 
+## Version 0.7.2
+
+* Merge https://github.com/websocket-rails/websocket-rails/pull/278
+
+* Add .ruby-gemset to gitignore file
+
+
 ## Version 0.7.0
 
 March 14 2014
