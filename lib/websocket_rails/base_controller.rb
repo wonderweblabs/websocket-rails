@@ -25,7 +25,6 @@ module WebsocketRails
       def process_action(method, event)
         if respond_to?(method)
           self.send(method)
-          trigger_finished
         else
           raise EventRoutingError.new(event, self, method)
         end
@@ -99,7 +98,7 @@ module WebsocketRails
     # this action. The object passed to this method will be passed as an argument to
     # the callback function on the client.
     def trigger_success(data=nil)
-      event.success = Event::SUCCEEDED
+      event.success = true
       event.data = data
       event.trigger
     end
@@ -108,7 +107,7 @@ module WebsocketRails
     # this action. The object passed to this method will be passed as an argument to
     # the callback function on the client.
     def trigger_failure(data=nil)
-      event.success = Event::FAILED
+      event.success = false
       event.data = data
       event.trigger
     end
@@ -142,14 +141,14 @@ module WebsocketRails
     # See the {EventMap} documentation for more on mapping namespaced actions.
     def send_message(event_name, message, options={})
       options.merge! :connection => connection, :data => message
-      event = Event.new( event_name, options )
-      @_dispatcher.send_message event if @_dispatcher.respond_to?(:send_message)
+      event = Event.new(event_name, message, options)
+      connection.trigger event
     end
 
     # Broadcasts a message to all connected clients. See {#send_message} for message passing details.
     def broadcast_message(event_name, message, options={})
       options.merge! :connection => connection, :data => message
-      event = Event.new( event_name, options )
+      event = Event.new(event_name, message, options)
       @_dispatcher.broadcast_message event if @_dispatcher.respond_to?(:broadcast_message)
     end
 
@@ -192,16 +191,6 @@ module WebsocketRails
       else
         super
       end
-    end
-
-    def trigger_finished
-      return if event.nil? || event.success
-      if WebsocketRails.config.trigger_success_by_default
-        event.success = Event::SUCCEEDED
-      else
-        event.success = Event::FINISHED_WITHOUT_RESULT
-      end
-      event.trigger
     end
 
   end

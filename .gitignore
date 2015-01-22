@@ -13,3 +13,4 @@ test/dummy/tmp/
 .rbx/
 spec/javascripts/generated/
 tmp/rspec_guard_result
+.ruby-gemset

@@ -26,27 +26,19 @@ module WebsocketRails
       data ? "with data #{data}": 'with no data'
     end
 
-    def self.actual_for_spec_message(event)
+    def self.actual_for_spec_message(event, success)
       if event.triggered?
-        success = event.success
         if success.nil?
           "triggered message #{actual_data_for_spec_message(event.data)}"
         else
-          success_state = 
-          case success
-          when 0 then "a success"
-          when 1 then "a failure"
-          when 2 then "a no result"
-          else success
-          end
-          "triggered #{success_state} message #{actual_data_for_spec_message(event.data)}"
+          "triggered #{event.success ? 'a success' : 'a failure' } message #{actual_data_for_spec_message(event.data)}"
         end
       else
         'did not trigger any message'
       end
     end
 
-    def self.verify_trigger(event, data, success=nil)
+    def self.verify_trigger(event, data, success)
       return false unless event.triggered?
       return false unless compare_trigger_data(event, data)
       success.nil? || success == event.success
@@ -58,36 +50,38 @@ end
 
 
 RSpec::Matchers.define :trigger_message do |data|
+
   match do |event|
-    WebsocketRails::SpecHelpers.verify_trigger event, data
+    WebsocketRails::SpecHelpers.verify_trigger event, data, nil
   end
 
-  failure_message_for_should do |event|
+  failure_message do |event|
     "expected #{event.encoded_name} to trigger message#{WebsocketRails::SpecHelpers.expected_data_for_spec_message data}, " +
-        "instead it #{WebsocketRails::SpecHelpers.actual_for_spec_message event}"
+        "instead it #{WebsocketRails::SpecHelpers.actual_for_spec_message event, nil}"
   end
 
-  failure_message_for_should_not do |event|
+  failure_message_when_negated do |event|
     "expected #{event.encoded_name} not to trigger message#{WebsocketRails::SpecHelpers.expected_data_for_spec_message data}"
   end
 
   description do
     "trigger message#{WebsocketRails::SpecHelpers.expected_data_for_spec_message data}"
   end
+
 end
 
 RSpec::Matchers.define :trigger_success_message do |data|
 
   match do |event|
-    WebsocketRails::SpecHelpers.verify_trigger event, data, 0
+    WebsocketRails::SpecHelpers.verify_trigger event, data, true
   end
 
-  failure_message_for_should do |event|
+  failure_message do |event|
     "expected #{event.encoded_name} to trigger success message#{WebsocketRails::SpecHelpers.expected_data_for_spec_message data}, "+
-        "instead it #{WebsocketRails::SpecHelpers.actual_for_spec_message event}"
+        "instead it #{WebsocketRails::SpecHelpers.actual_for_spec_message event, true}"
   end
 
-  failure_message_for_should_not do |event|
+  failure_message_when_negated do |event|
     "expected #{event.encoded_name} not to trigger success message#{WebsocketRails::SpecHelpers.expected_data_for_spec_message data}"
   end
 
@@ -100,15 +94,15 @@ end
 RSpec::Matchers.define :trigger_failure_message do |data|
 
   match do |event|
-    WebsocketRails::SpecHelpers.verify_trigger event, data, 1
+    WebsocketRails::SpecHelpers.verify_trigger event, data, false
   end
 
-  failure_message_for_should do |event|
+  failure_message do |event|
     "expected #{event.encoded_name} to trigger failure message#{WebsocketRails::SpecHelpers.expected_data_for_spec_message data}, " +
-        "instead it #{WebsocketRails::SpecHelpers.actual_for_spec_message event}"
+        "instead it #{WebsocketRails::SpecHelpers.actual_for_spec_message event, true}"
   end
 
-  failure_message_for_should_not do |event|
+  failure_message_when_negated do |event|
     "expected #{event.encoded_name} not to trigger failure message#{WebsocketRails::SpecHelpers.expected_data_for_spec_message data}"
   end
 
@@ -116,23 +110,4 @@ RSpec::Matchers.define :trigger_failure_message do |data|
     "trigger failure message#{WebsocketRails::SpecHelpers.expected_data_for_spec_message data}"
   end
 
-end
-
-Rspec::Matchers.define :trigger_no_result_message do |data|
-  match do |event|
-    WebsocketRails::SpecHelpers.verify_trigger event, data, 2
-  end
-
-  failure_message_for_should do |event|
-    "expected #{event.encoded_name} to trigger no result message (success == 2)#{WebsocketRails::SpecHelpers.expected_data_for_spec_message data}, "+
-      "instead it #{WebsocketRails::SpecHelpers.actual_for_spec_message event}"
-  end
-
-  failure_message_for_should_not do |event|
-    "expected #{event.encoded_name} not to trigger no result message (success == 2)"
-  end
-
-  description do 
-    "trigger no result message #{WebsocketRails::SpecHelpers.expected_data_for_spec_message data}"
-  end
 end
